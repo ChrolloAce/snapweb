@@ -59,6 +59,8 @@ img {
     font-weight: 700;
     text-align: center;
     margin-bottom: 2.5rem;
+    margin-left: auto;
+    margin-right: auto;
     color: var(--text-color);
     position: relative;
     display: inline-block;
@@ -245,6 +247,7 @@ nav .container {
     display: inline-block;
     transition: all 0.3s ease;
     box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+    text-align: center;
 }
 
 .primary-btn:hover {
@@ -262,6 +265,7 @@ nav .container {
     border: 2px solid var(--primary-color);
     display: inline-block;
     transition: all 0.3s ease;
+    text-align: center;
 }
 
 .secondary-btn:hover {
@@ -603,12 +607,38 @@ nav .container {
 .download .section-subtitle {
     color: white;
     position: relative;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .download-buttons {
     display: flex;
     justify-content: center;
+    align-items: center;
     position: relative;
+    width: 100%;
+    margin: 0 auto;
+    max-width: 220px;
+}
+
+.app-store-btn {
+    display: block;
+    text-align: center;
+    position: relative;
+    margin: 0 auto;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    transition: all 0.5s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.app-store-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 .app-store-btn img {
@@ -618,8 +648,26 @@ nav .container {
 }
 
 .app-store-btn:hover img {
-    transform: scale(1.1) translateY(-5px);
+    transform: scale(1.05);
     filter: drop-shadow(0 5px 15px rgba(255, 255, 255, 0.5));
+}
+
+/* Fix centering for CTA buttons in hero section */
+.hero .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .hero .cta-buttons {
+        justify-content: center;
+    }
+    
+    .download-buttons {
+        max-width: 180px;
+    }
 }
 
 /* Footer */
@@ -903,4 +951,14 @@ body.menu-open {
     .section-title {
         font-size: 2rem;
     }
+}
+
+/* Center section titles container */
+.features .container, 
+.screenshots .container, 
+.testimonials .container, 
+.download .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 } 
