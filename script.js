@@ -23,23 +23,72 @@ document.addEventListener('DOMContentLoaded', function() {
     const slider = document.querySelector('.screenshots-slider');
     const prevBtn = document.querySelector('.prev-btn');
     const nextBtn = document.querySelector('.next-btn');
+    const items = document.querySelectorAll('.screenshot-item');
     
     if (slider && prevBtn && nextBtn) {
         const slideWidth = document.querySelector('.screenshot-item').offsetWidth + 24; // item width + gap
+        let currentIndex = 0;
+        
+        // Initially highlight the first screenshot item
+        if(items.length > 0) {
+            items[0].classList.add('active');
+        }
         
         prevBtn.addEventListener('click', function() {
-            slider.scrollBy({
-                left: -slideWidth,
-                behavior: 'smooth'
-            });
+            currentIndex = Math.max(0, currentIndex - 1);
+            updateSliderPosition();
         });
         
         nextBtn.addEventListener('click', function() {
-            slider.scrollBy({
-                left: slideWidth,
+            currentIndex = Math.min(items.length - 1, currentIndex + 1);
+            updateSliderPosition();
+        });
+        
+        function updateSliderPosition() {
+            slider.scrollTo({
+                left: currentIndex * slideWidth,
                 behavior: 'smooth'
             });
-        });
+            
+            // Update active state
+            items.forEach((item, index) => {
+                if(index === currentIndex) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+        
+        // Touch swipe functionality for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        slider.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        
+        slider.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if(touchEndX < touchStartX - swipeThreshold) {
+                // Swipe left
+                if(currentIndex < items.length - 1) {
+                    currentIndex++;
+                    updateSliderPosition();
+                }
+            } else if(touchEndX > touchStartX + swipeThreshold) {
+                // Swipe right
+                if(currentIndex > 0) {
+                    currentIndex--;
+                    updateSliderPosition();
+                }
+            }
+        }
     }
     
     // Smooth scrolling for anchor links
@@ -80,10 +129,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Fade-in animations on scroll
-    const fadeElements = document.querySelectorAll('.feature-card, .testimonial-card, .section-title');
+    const fadeElements = document.querySelectorAll('.fade-element');
     
     const fadeInOptions = {
-        threshold: 0.1,
+        threshold: 0.15,
         rootMargin: '0px 0px -100px 0px'
     };
     
@@ -97,7 +146,76 @@ document.addEventListener('DOMContentLoaded', function() {
     }, fadeInOptions);
     
     fadeElements.forEach(element => {
-        element.classList.add('fade-element');
         fadeInObserver.observe(element);
+    });
+    
+    // Parallax effect for background elements
+    window.addEventListener('scroll', function() {
+        const scrollY = window.scrollY;
+        
+        // Apply parallax to hero section
+        const heroSection = document.querySelector('.hero');
+        if (heroSection) {
+            heroSection.style.backgroundPosition = `center ${scrollY * 0.1}px`;
+        }
+        
+        // Apply parallax to features section
+        const featuresSection = document.querySelector('.features');
+        if (featuresSection) {
+            const featuresTop = featuresSection.offsetTop;
+            const featuresBg = featuresSection.querySelector('.features::before');
+            if (featuresBg) {
+                featuresBg.style.transform = `translateY(${(scrollY - featuresTop) * 0.05}px)`;
+            }
+        }
+    });
+    
+    // Add floating animations to phone mockups with delay
+    const phoneMockups = document.querySelectorAll('.phone-mockup');
+    phoneMockups.forEach((mockup, index) => {
+        setTimeout(() => {
+            mockup.classList.add('floating');
+        }, index * 300); // Staggered animation
+    });
+    
+    // Add pulse animation to CTA buttons
+    const ctaButtons = document.querySelectorAll('.primary-btn, .app-store-btn');
+    ctaButtons.forEach(button => {
+        button.classList.add('pulse');
+    });
+    
+    // Add interactive hover effect to screenshots
+    const phoneScreenshots = document.querySelectorAll('.screenshot-item .phone-mockup');
+    phoneScreenshots.forEach(screenshot => {
+        screenshot.addEventListener('mouseenter', function() {
+            this.classList.add('active');
+        });
+        
+        screenshot.addEventListener('mouseleave', function() {
+            this.classList.remove('active');
+        });
+    });
+    
+    // Add tilt effect to phone mockups
+    const mockups = document.querySelectorAll('.phone-mockup');
+    
+    mockups.forEach(mockup => {
+        mockup.addEventListener('mousemove', function(e) {
+            const mockupRect = this.getBoundingClientRect();
+            const mouseX = e.clientX - mockupRect.left;
+            const mouseY = e.clientY - mockupRect.top;
+            
+            const centerX = mockupRect.width / 2;
+            const centerY = mockupRect.height / 2;
+            
+            const tiltX = (mouseY - centerY) / 20;
+            const tiltY = (centerX - mouseX) / 20;
+            
+            this.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(-10px)`;
+        });
+        
+        mockup.addEventListener('mouseleave', function() {
+            this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+        });
     });
 }); 
