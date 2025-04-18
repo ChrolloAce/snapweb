@@ -25,23 +25,46 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextBtn = document.querySelector('.next-btn');
     const items = document.querySelectorAll('.screenshot-item');
     
-    if (slider && prevBtn && nextBtn) {
+    if (slider && prevBtn && nextBtn && items.length > 0) {
         const slideWidth = document.querySelector('.screenshot-item').offsetWidth + 24; // item width + gap
         let currentIndex = 0;
+        let autoSlideInterval;
         
         // Initially highlight the first screenshot item
         if(items.length > 0) {
             items[0].classList.add('active');
         }
         
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % items.length;
+                updateSliderPosition();
+            }, 3000); // Change slide every 3 seconds
+        }
+        
+        function stopAutoSlide() {
+            clearInterval(autoSlideInterval);
+        }
+        
+        // Start auto sliding
+        startAutoSlide();
+        
+        // Pause auto slide on hover
+        slider.addEventListener('mouseenter', stopAutoSlide);
+        slider.addEventListener('mouseleave', startAutoSlide);
+        
         prevBtn.addEventListener('click', function() {
+            stopAutoSlide(); // Stop auto sliding when user interacts
             currentIndex = Math.max(0, currentIndex - 1);
             updateSliderPosition();
+            startAutoSlide(); // Restart auto sliding after user interaction
         });
         
         nextBtn.addEventListener('click', function() {
+            stopAutoSlide(); // Stop auto sliding when user interacts
             currentIndex = Math.min(items.length - 1, currentIndex + 1);
             updateSliderPosition();
+            startAutoSlide(); // Restart auto sliding after user interaction
         });
         
         function updateSliderPosition() {
@@ -65,12 +88,14 @@ document.addEventListener('DOMContentLoaded', function() {
         let touchEndX = 0;
         
         slider.addEventListener('touchstart', e => {
+            stopAutoSlide(); // Stop auto sliding when user interacts
             touchStartX = e.changedTouches[0].screenX;
         }, { passive: true });
         
         slider.addEventListener('touchend', e => {
             touchEndX = e.changedTouches[0].screenX;
             handleSwipe();
+            startAutoSlide(); // Restart auto sliding after user interaction
         }, { passive: true });
         
         function handleSwipe() {
